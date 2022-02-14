@@ -115,8 +115,7 @@ func (l *loggerImpl) Tracef(format string, args ...interface{}) {
 }
 
 func (l *loggerImpl) log(lvl level, format string, args ...interface{}) {
-	file, line, _ := callerInfo()
-	fmt.Printf("%s  %s  %s:%d ", time.Now().Format(timestampFormat), l.levelStr[lvl], file, line)
+	fmt.Printf("%s  %s  %-30s  ", time.Now().Format(timestampFormat), l.levelStr[lvl], callerInfo())
 	fmt.Printf(format, args...)
 	fmt.Printf("\n")
 }
@@ -142,22 +141,31 @@ func buildDefaultFormat(count int) string {
 	return result.String()
 }
 
-func callerInfo() (string, int, string) {
+func callerInfo() string {
 	// TODO: Make the skip more generic.
 	frame, ok := callerFrame(5)
 	if !ok {
-		return "UnknownFile", 0, "UnknownFunction"
+		return formatCallerInfo("UnknownFile", 0)
 	}
 
 	ix := strings.LastIndexByte(frame.File, '/')
 	if ix == -1 {
-		return frame.File, frame.Line, frame.Function
+		return formatCallerInfo(frame.File, frame.Line)
 	}
 	ix = strings.LastIndexByte(frame.File[:ix], '/')
 	if ix == -1 {
-		return frame.File, frame.Line, frame.Function
+		return formatCallerInfo(frame.File, frame.Line)
 	}
-	return frame.File[ix+1:], frame.Line, frame.Function
+	return formatCallerInfo(frame.File[ix+1:], frame.Line)
+}
+
+func formatCallerInfo(file string, line int) string {
+	caller := fmt.Sprintf("%s:%d", file, line)
+	callerLen := len(caller)
+	if callerLen > 30 {
+		return caller[callerLen-30:]
+	}
+	return caller
 }
 
 func callerFrame(skip int) (runtime.Frame, bool) {

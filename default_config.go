@@ -3,7 +3,7 @@ package zzzlog
 import "os"
 
 var (
-	defaultLevelColors = levelColorMap{
+	colorizedDefault = levelColorMap{
 		lvlFatal: {
 			color: colorCodeRed,
 			bold: true,
@@ -24,11 +24,49 @@ var (
 			color: colorCodeMagenta,
 		},
 	}
+	nonColorizedDefault = levelColorMap{
+		lvlFatal: {
+			color: colorCodeNone,
+		},
+		lvlError: {
+			color: colorCodeNone,
+		},
+		lvlWarn: {
+			color: colorCodeNone,
+		},
+		lvlInfo: {
+			color: colorCodeNone,
+		},
+		lvlDebug: {
+			color: colorCodeNone,
+		},
+		lvlTrace: {
+			color: colorCodeNone,
+		},
+	}
 )
 
 func defaultLoggingConfig() *loggerConfig {
-	return &loggerConfig{
-		dest:        os.Stdout,
-		levelColors: defaultLevelColors,
+	c := &loggerConfig{
+		dest: os.Stdout,
 	}
+	if isTTY() {
+		c.levelColors = colorizedDefault
+	} else {
+		c.levelColors = nonColorizedDefault
+	}
+	return c
+}
+
+func isTTY() bool {
+	f, err := os.Stdin.Stat()
+	if err != nil {
+		// Unable to get FileInfo for stdin, will fall back to assuming
+		// it is not a TTY.
+		return false
+	}
+	if (f.Mode() & os.ModeCharDevice) == 0 {
+		return false
+	}
+	return true
 }

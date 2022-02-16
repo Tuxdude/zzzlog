@@ -22,16 +22,28 @@ const (
 
 type colorCode uint8
 
-var (
-	colorLevelStr = []string{
-		coloredText("FATAL", colorCodeRed, true),
-		coloredText("ERROR", colorCodeRed, false),
-		coloredText("WARN ", colorCodeYellow, false),
-		coloredText("INFO ", colorCodeBlue, false),
-		coloredText("DEBUG", colorCodeGreen, false),
-		coloredText("TRACE", colorCodeMagenta, false),
+type levelColorMap map[level]*levelColorInfo
+
+type levelColorInfo struct {
+	code colorCode
+	bold bool
+}
+
+func buildColoredLevels(colorMap levelColorMap) []string {
+	result := make([]string, len(orderedLevels))
+	for idx, lvl := range orderedLevels {
+		n, ok := levelName[lvl]
+		if !ok {
+			panic("Level name %q present in orderedLevels is not part of levelName map")
+		}
+		c, ok := colorMap[lvl]
+		if !ok {
+			panic("Level name %q present in orderedLevels is not part of color map")
+		}
+		result[idx] = coloredText(n, c.code, c.bold)
 	}
-)
+	return result
+}
 
 func coloredText(text string, color colorCode, bold bool) string {
 	b := ""

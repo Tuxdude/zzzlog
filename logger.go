@@ -24,7 +24,7 @@ type loggerImpl struct {
 func NewLogger() zzzlogi.Logger {
 	logger := &loggerImpl{
 		writer:   os.Stdout,
-		levelStr: colorLevelStr,
+		levelStr: buildColoredLevels(defaultLevelColors),
 	}
 	return logger
 }

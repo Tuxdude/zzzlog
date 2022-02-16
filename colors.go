@@ -1,11 +1,18 @@
 package zzzlog
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 const (
-	colorPrefix = "\x1b["
-	colorBold   = "1;"
-	colorReset  = "\x1b[0m"
+	formatPrefix    = "\x1b["
+	formatSuffix    = "m"
+	optionSeperator = ";"
+	optionReset     = "0"
+	optionBold      = "1"
+	optionUnderline = "4"
+	optionInvert    = "7"
 )
 
 // nolint (deadcode)
@@ -18,6 +25,7 @@ const (
 	colorCodeMagenta
 	colorCodeCyan
 	colorCodeWhite
+	colorCodeNone = 0
 )
 
 type colorCode uint8
@@ -25,8 +33,10 @@ type colorCode uint8
 type levelColorMap map[level]*levelColorInfo
 
 type levelColorInfo struct {
-	code colorCode
-	bold bool
+	color     colorCode
+	bold      bool
+	underline bool
+	invert    bool
 }
 
 func buildColoredLevels(colorMap levelColorMap) []string {
@@ -40,15 +50,50 @@ func buildColoredLevels(colorMap levelColorMap) []string {
 		if !ok {
 			panic("Level name %q present in orderedLevels is not part of color map")
 		}
-		result[idx] = coloredText(n, c.code, c.bold)
+		result[idx] = coloredText(n, c)
 	}
 	return result
 }
 
-func coloredText(text string, color colorCode, bold bool) string {
-	b := ""
-	if bold {
-		b = colorBold
+func coloredText(text string, format *levelColorInfo) string {
+	if format.color == colorCodeNone && !format.bold && !format.underline && !format.invert {
+		return text
 	}
-	return fmt.Sprintf("%s%s%dm%s%s", colorPrefix, b, color, text, colorReset)
+
+	firstOption := true
+	var result strings.Builder
+	result.WriteString(formatPrefix)
+	if format.bold {
+		if !firstOption {
+			result.WriteString(optionSeperator)
+		}
+		firstOption = false
+		result.WriteString(optionBold)
+	}
+	if format.underline {
+		if !firstOption {
+			result.WriteString(optionSeperator)
+		}
+		firstOption = false
+		result.WriteString(optionUnderline)
+	}
+	if format.invert {
+		if !firstOption {
+			result.WriteString(optionSeperator)
+		}
+		firstOption = false
+		result.WriteString(optionInvert)
+	}
+	if format.color != colorCodeNone {
+		if !firstOption {
+			result.WriteString(optionSeperator)
+		}
+		result.WriteString(fmt.Sprintf("%d", format.color))
+	}
+	result.WriteString(formatSuffix)
+	result.WriteString(text)
+	result.WriteString(formatPrefix)
+	result.WriteString(optionReset)
+	result.WriteString(formatSuffix)
+	return result.String()
 }

@@ -20,11 +20,20 @@ type loggerImpl struct {
 	levelStr []string
 }
 
+type loggerConfig struct {
+	dest        io.Writer
+	levelColors levelColorMap
+}
+
 // NewLogger instantiates a Logger.
 func NewLogger() zzzlogi.Logger {
+	return newLoggerForConfig(defaultLoggingConfig())
+}
+
+func newLoggerForConfig(config *loggerConfig) zzzlogi.Logger {
 	logger := &loggerImpl{
-		writer:   os.Stdout,
-		levelStr: buildColoredLevels(defaultLevelColors),
+		writer:   config.dest,
+		levelStr: buildColoredLevels(config.levelColors),
 	}
 	return logger
 }

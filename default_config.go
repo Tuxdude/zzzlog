@@ -1,30 +1,34 @@
 package zzzlog
 
+import "os"
+
 var (
 	defaultLevelColors = levelColorMap{
 		lvlFatal: {
-			code: colorCodeRed,
+			color: colorCodeRed,
 			bold: true,
 		},
 		lvlError: {
-			code: colorCodeRed,
-			bold: false,
+			color: colorCodeRed,
 		},
 		lvlWarn: {
-			code: colorCodeYellow,
-			bold: false,
+			color: colorCodeYellow,
 		},
 		lvlInfo: {
-			code: colorCodeBlue,
-			bold: false,
+			color: colorCodeBlue,
 		},
 		lvlDebug: {
-			code: colorCodeGreen,
-			bold: false,
+			color: colorCodeGreen,
 		},
 		lvlTrace: {
-			code: colorCodeMagenta,
-			bold: false,
+			color: colorCodeMagenta,
 		},
 	}
 )
+
+func defaultLoggingConfig() *loggerConfig {
+	return &loggerConfig{
+		dest:        os.Stdout,
+		levelColors: defaultLevelColors,
+	}
+}

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"runtime"
 	"strings"
 	"time"
 
@@ -141,10 +140,4 @@ func buildDefaultFormat(count int) string {
 		result.WriteString(" %v")
 	}
 	return result.String()
-}
-
-func stackTraces() []byte {
-	buf := make([]byte, 1<<16)
-	size := runtime.Stack(buf, true)
-	return buf[:size]
 }

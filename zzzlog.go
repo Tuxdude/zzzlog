@@ -2,6 +2,7 @@ package zzzlog
 
 import (
 	"fmt"
+	"os"
 	"runtime"
 	"strings"
 	"time"
@@ -68,10 +69,14 @@ func NewLogger() zzzlogi.Logger {
 
 func (l *loggerImpl) Fatal(args ...interface{}) {
 	l.log(lvlFatal, format(len(args)), args...)
+	fmt.Printf("\n%s\n", stackTraces())
+	os.Exit(1)
 }
 
 func (l *loggerImpl) Fatalf(format string, args ...interface{}) {
 	l.log(lvlFatal, format, args...)
+	fmt.Printf("\n%s\n", stackTraces())
+	os.Exit(1)
 }
 
 func (l *loggerImpl) Error(args ...interface{}) {
@@ -178,4 +183,10 @@ func callerFrame(skip int) (runtime.Frame, bool) {
 
 	frame, _ = runtime.CallersFrames(pc).Next()
 	return frame, frame.PC != 0
+}
+
+func stackTraces() []byte {
+	buf := make([]byte, 1<<16)
+	size := runtime.Stack(buf, true)
+	return buf[:size]
 }

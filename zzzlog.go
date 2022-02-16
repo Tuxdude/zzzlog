@@ -68,59 +68,59 @@ func NewLogger() zzzlogi.Logger {
 }
 
 func (l *loggerImpl) Fatal(args ...interface{}) {
-	l.log(lvlFatal, format(len(args)), args...)
+	l.log(lvlFatal, 1, format(len(args)), args...)
 	fmt.Printf("\n%s\n", stackTraces())
 	os.Exit(1)
 }
 
 func (l *loggerImpl) Fatalf(format string, args ...interface{}) {
-	l.log(lvlFatal, format, args...)
+	l.log(lvlFatal, 1, format, args...)
 	fmt.Printf("\n%s\n", stackTraces())
 	os.Exit(1)
 }
 
 func (l *loggerImpl) Error(args ...interface{}) {
-	l.log(lvlError, format(len(args)), args...)
+	l.log(lvlError, 1, format(len(args)), args...)
 }
 
 func (l *loggerImpl) Errorf(format string, args ...interface{}) {
-	l.log(lvlError, format, args...)
+	l.log(lvlError, 1, format, args...)
 }
 
 func (l *loggerImpl) Warn(args ...interface{}) {
-	l.log(lvlWarn, format(len(args)), args...)
+	l.log(lvlWarn, 1, format(len(args)), args...)
 }
 
 func (l *loggerImpl) Warnf(format string, args ...interface{}) {
-	l.log(lvlWarn, format, args...)
+	l.log(lvlWarn, 1, format, args...)
 }
 
 func (l *loggerImpl) Info(args ...interface{}) {
-	l.log(lvlInfo, format(len(args)), args...)
+	l.log(lvlInfo, 1, format(len(args)), args...)
 }
 
 func (l *loggerImpl) Infof(format string, args ...interface{}) {
-	l.log(lvlInfo, format, args...)
+	l.log(lvlInfo, 1, format, args...)
 }
 
 func (l *loggerImpl) Debug(args ...interface{}) {
-	l.log(lvlDebug, format(len(args)), args...)
+	l.log(lvlDebug, 1, format(len(args)), args...)
 }
 
 func (l *loggerImpl) Debugf(format string, args ...interface{}) {
-	l.log(lvlDebug, format, args...)
+	l.log(lvlDebug, 1, format, args...)
 }
 
 func (l *loggerImpl) Trace(args ...interface{}) {
-	l.log(lvlTrace, format(len(args)), args...)
+	l.log(lvlTrace, 1, format(len(args)), args...)
 }
 
 func (l *loggerImpl) Tracef(format string, args ...interface{}) {
-	l.log(lvlTrace, format, args...)
+	l.log(lvlTrace, 1, format, args...)
 }
 
-func (l *loggerImpl) log(lvl level, format string, args ...interface{}) {
-	fmt.Printf("%s  %s  %-30s  ", time.Now().Format(timestampFormat), l.levelStr[lvl], callerInfo())
+func (l *loggerImpl) log(lvl level, skipFrames int, format string, args ...interface{}) {
+	fmt.Printf("%s  %s  %-30s  ", time.Now().Format(timestampFormat), l.levelStr[lvl], callerInfo(skipFrames+1))
 	fmt.Printf(format, args...)
 	fmt.Printf("\n")
 }
@@ -146,9 +146,8 @@ func buildDefaultFormat(count int) string {
 	return result.String()
 }
 
-func callerInfo() string {
-	// TODO: Make the skip more generic.
-	frame, ok := callerFrame(5)
+func callerInfo(skipFrames int) string {
+	frame, ok := callerFrame(skipFrames + 1)
 	if !ok {
 		return formatCallerInfo("UnknownFile", 0)
 	}
@@ -173,10 +172,12 @@ func formatCallerInfo(file string, line int) string {
 	return caller
 }
 
-func callerFrame(skip int) (runtime.Frame, bool) {
+func callerFrame(skipFrames int) (runtime.Frame, bool) {
 	var frame runtime.Frame
 	pc := make([]uintptr, 1)
-	numFrames := runtime.Callers(skip, pc)
+	// We need to skip one frame to get this call site which invokes
+	// runtime.Callers(), hence one more than that is what we care.
+	numFrames := runtime.Callers(skipFrames+2, pc)
 	if numFrames < 1 {
 		return frame, false
 	}

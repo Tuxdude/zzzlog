@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/tuxdude/zzzlogi"
@@ -14,27 +13,6 @@ import (
 
 const (
 	timestampFormat = "2006-01-02T15:04:05.000Z0700"
-)
-
-var (
-	defaultFormat = []string{
-		"",
-		"%v",
-		"%v %v",
-		"%v %v %v",
-		"%v %v %v %v",
-		"%v %v %v %v %v",
-		"%v %v %v %v %v %v",
-		"%v %v %v %v %v %v %v",
-		"%v %v %v %v %v %v %v %v",
-		"%v %v %v %v %v %v %v %v %v",
-		"%v %v %v %v %v %v %v %v %v %v",
-		"%v %v %v %v %v %v %v %v %v %v %v",
-		"%v %v %v %v %v %v %v %v %v %v %v %v",
-		"%v %v %v %v %v %v %v %v %v %v %v %v %v",
-		"%v %v %v %v %v %v %v %v %v %v %v %v %v %v",
-		"%v %v %v %v %v %v %v %v %v %v %v %v %v %v %v",
-	}
 )
 
 type loggerImpl struct {
@@ -52,7 +30,7 @@ func NewLogger() zzzlogi.Logger {
 }
 
 func (l *loggerImpl) Fatal(args ...interface{}) {
-	l.log(lvlFatal, 1, format(len(args)), args...)
+	l.log(lvlFatal, 1, defaultFormat(len(args)), args...)
 	l.write("\n%s\n", stackTraces())
 	os.Exit(1)
 }
@@ -64,7 +42,7 @@ func (l *loggerImpl) Fatalf(format string, args ...interface{}) {
 }
 
 func (l *loggerImpl) Error(args ...interface{}) {
-	l.log(lvlError, 1, format(len(args)), args...)
+	l.log(lvlError, 1, defaultFormat(len(args)), args...)
 }
 
 func (l *loggerImpl) Errorf(format string, args ...interface{}) {
@@ -72,7 +50,7 @@ func (l *loggerImpl) Errorf(format string, args ...interface{}) {
 }
 
 func (l *loggerImpl) Warn(args ...interface{}) {
-	l.log(lvlWarn, 1, format(len(args)), args...)
+	l.log(lvlWarn, 1, defaultFormat(len(args)), args...)
 }
 
 func (l *loggerImpl) Warnf(format string, args ...interface{}) {
@@ -80,7 +58,7 @@ func (l *loggerImpl) Warnf(format string, args ...interface{}) {
 }
 
 func (l *loggerImpl) Info(args ...interface{}) {
-	l.log(lvlInfo, 1, format(len(args)), args...)
+	l.log(lvlInfo, 1, defaultFormat(len(args)), args...)
 }
 
 func (l *loggerImpl) Infof(format string, args ...interface{}) {
@@ -88,7 +66,7 @@ func (l *loggerImpl) Infof(format string, args ...interface{}) {
 }
 
 func (l *loggerImpl) Debug(args ...interface{}) {
-	l.log(lvlDebug, 1, format(len(args)), args...)
+	l.log(lvlDebug, 1, defaultFormat(len(args)), args...)
 }
 
 func (l *loggerImpl) Debugf(format string, args ...interface{}) {
@@ -96,7 +74,7 @@ func (l *loggerImpl) Debugf(format string, args ...interface{}) {
 }
 
 func (l *loggerImpl) Trace(args ...interface{}) {
-	l.log(lvlTrace, 1, format(len(args)), args...)
+	l.log(lvlTrace, 1, defaultFormat(len(args)), args...)
 }
 
 func (l *loggerImpl) Tracef(format string, args ...interface{}) {
@@ -111,25 +89,4 @@ func (l *loggerImpl) log(lvl level, skipFrames int, format string, args ...inter
 
 func (l *loggerImpl) write(format string, args ...interface{}) {
 	fmt.Fprintf(l.writer, format, args...)
-}
-
-func format(count int) string {
-	if count < len(defaultFormat) {
-		return defaultFormat[count]
-	}
-	return buildDefaultFormat(count)
-}
-
-func buildDefaultFormat(count int) string {
-	if count == 0 {
-		return ""
-	}
-	var result strings.Builder
-	result.WriteString("%v")
-	count--
-	for count > 0 {
-		count--
-		result.WriteString(" %v")
-	}
-	return result.String()
 }

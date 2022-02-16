@@ -1,3 +1,5 @@
+// Package zzzlog provides a minimalistic level logging library based on
+// the zzzlogi level logging interface.
 package zzzlog
 
 import (

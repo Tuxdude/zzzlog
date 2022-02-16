@@ -46,19 +46,6 @@ var (
 	}
 )
 
-// Logging levels.
-const (
-	lvlFatal level = iota
-	lvlError
-	lvlWarn
-	lvlInfo
-	lvlDebug
-	lvlTrace
-)
-
-// Level represents the logging level.
-type level uint8
-
 type loggerImpl struct {
 	writer   io.Writer
 	levelStr []string

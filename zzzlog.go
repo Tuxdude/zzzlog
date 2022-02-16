@@ -2,6 +2,7 @@ package zzzlog
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"runtime"
 	"strings"
@@ -57,25 +58,28 @@ const (
 type level uint8
 
 type loggerImpl struct {
+	writer   io.Writer
 	levelStr []string
 }
 
 // NewLogger instantiates a Logger.
 func NewLogger() zzzlogi.Logger {
-	logger := &loggerImpl{}
-	logger.levelStr = colorLevelStr
+	logger := &loggerImpl{
+		writer:   os.Stdout,
+		levelStr: colorLevelStr,
+	}
 	return logger
 }
 
 func (l *loggerImpl) Fatal(args ...interface{}) {
 	l.log(lvlFatal, 1, format(len(args)), args...)
-	fmt.Printf("\n%s\n", stackTraces())
+	l.write("\n%s\n", stackTraces())
 	os.Exit(1)
 }
 
 func (l *loggerImpl) Fatalf(format string, args ...interface{}) {
 	l.log(lvlFatal, 1, format, args...)
-	fmt.Printf("\n%s\n", stackTraces())
+	l.write("\n%s\n", stackTraces())
 	os.Exit(1)
 }
 
@@ -120,9 +124,13 @@ func (l *loggerImpl) Tracef(format string, args ...interface{}) {
 }
 
 func (l *loggerImpl) log(lvl level, skipFrames int, format string, args ...interface{}) {
-	fmt.Printf("%s  %s  %-30s  ", time.Now().Format(timestampFormat), l.levelStr[lvl], callerInfo(skipFrames+1))
-	fmt.Printf(format, args...)
-	fmt.Printf("\n")
+	l.write("%s  %s  %-30s  ", time.Now().Format(timestampFormat), l.levelStr[lvl], callerInfo(skipFrames+1))
+	l.write(format, args...)
+	l.write("\n")
+}
+
+func (l *loggerImpl) write(format string, args ...interface{}) {
+	fmt.Fprintf(l.writer, format, args...)
 }
 
 func format(count int) string {

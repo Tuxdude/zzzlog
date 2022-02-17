@@ -91,9 +91,14 @@ func (l *loggerImpl) Tracef(format string, args ...interface{}) {
 }
 
 func (l *loggerImpl) log(lvl level, skipFrames int, format string, args ...interface{}) {
-	l.write("%s  %s  %-30s  ", time.Now().Format(timestampFormat), l.levelStr[lvl], callerInfo(skipFrames+1))
-	l.write(format, args...)
-	l.write("\n")
+	f := "%s  %s  %-30s  " + format + "\n"
+	a := []interface{}{
+		time.Now().Format(timestampFormat),
+		l.levelStr[lvl],
+		callerInfo(skipFrames + 1),
+	}
+	a = append(a, args...)
+	l.write(f, a...)
 }
 
 func (l *loggerImpl) write(format string, args ...interface{}) {

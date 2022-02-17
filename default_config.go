@@ -6,7 +6,7 @@ var (
 	colorizedDefault = levelColorMap{
 		lvlFatal: {
 			color: colorCodeRed,
-			bold: true,
+			bold:  true,
 		},
 		lvlError: {
 			color: colorCodeRed,

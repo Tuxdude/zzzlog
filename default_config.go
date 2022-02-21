@@ -4,51 +4,52 @@ import "os"
 
 var (
 	colorizedDefault = levelColorMap{
-		lvlFatal: {
+		LvlFatal: {
 			color: colorCodeRed,
 			bold:  true,
 		},
-		lvlError: {
+		LvlError: {
 			color: colorCodeRed,
 		},
-		lvlWarn: {
+		LvlWarn: {
 			color: colorCodeYellow,
 		},
-		lvlInfo: {
+		LvlInfo: {
 			color: colorCodeBlue,
 		},
-		lvlDebug: {
+		LvlDebug: {
 			color: colorCodeGreen,
 		},
-		lvlTrace: {
+		LvlTrace: {
 			color: colorCodeMagenta,
 		},
 	}
 	nonColorizedDefault = levelColorMap{
-		lvlFatal: {
+		LvlFatal: {
 			color: colorCodeNone,
 		},
-		lvlError: {
+		LvlError: {
 			color: colorCodeNone,
 		},
-		lvlWarn: {
+		LvlWarn: {
 			color: colorCodeNone,
 		},
-		lvlInfo: {
+		LvlInfo: {
 			color: colorCodeNone,
 		},
-		lvlDebug: {
+		LvlDebug: {
 			color: colorCodeNone,
 		},
-		lvlTrace: {
+		LvlTrace: {
 			color: colorCodeNone,
 		},
 	}
 )
 
-func defaultLoggingConfig() *loggerConfig {
-	c := &loggerConfig{
-		dest: os.Stdout,
+func defaultLoggingConfig() *configInternal {
+	c := &configInternal{
+		dest:     os.Stdout,
+		maxLevel: LvlInfo,
 	}
 	if isTTY() {
 		c.levelColors = colorizedDefault

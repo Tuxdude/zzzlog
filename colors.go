@@ -30,7 +30,7 @@ const (
 
 type colorCode uint8
 
-type levelColorMap map[level]*levelColorInfo
+type levelColorMap map[Level]*levelColorInfo
 
 type levelColorInfo struct {
 	color     colorCode

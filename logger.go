@@ -1,5 +1,3 @@
-// Package zzzlog provides a minimalistic level logging library based on
-// the zzzlogi level logging interface.
 package zzzlog
 
 import (
@@ -14,14 +12,6 @@ import (
 const (
 	timestampFormat = "2006-01-02T15:04:05.000Z0700"
 )
-
-// Config contains the configuration for the logger.
-type Config struct {
-	// Dest is the logging destination for the logs.
-	Dest io.Writer
-	// Level determines the maximum logging level.
-	MaxLevel Level
-}
 
 // loggerImpl is the implementation of the level logger based on
 // zzzlogi.Logger interface.
@@ -41,14 +31,6 @@ type configInternal struct {
 	maxLevel Level
 	// levelColors contains the color configuration for each log level.
 	levelColors levelColorMap
-}
-
-// NewLogger instantiates a Logger.
-func NewLogger(userConfig *Config) zzzlogi.Logger {
-	c := defaultLoggingConfig()
-	c.dest = userConfig.Dest
-	c.maxLevel = userConfig.MaxLevel
-	return newLoggerForConfig(c)
 }
 
 // newLoggerForConfig builds a logger based on the specified config.

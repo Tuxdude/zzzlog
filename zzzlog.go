@@ -4,6 +4,7 @@ package zzzlog
 
 import (
 	"io"
+	"os"
 
 	"github.com/tuxdude/zzzlogi"
 )
@@ -41,4 +42,13 @@ func NewLogger(userConfig *Config) zzzlogi.Logger {
 	c.dest = userConfig.Dest
 	c.maxLevel = userConfig.MaxLevel
 	return newLoggerForConfig(c)
+}
+
+// NewConsoleLoggerConfig returns a logger configuration for
+// logging to stdout with the maximum logging level set to Info.
+func NewConsoleLoggerConfig() *Config {
+	return &Config{
+		Dest:     os.Stdout,
+		MaxLevel: LvlInfo,
+	}
 }

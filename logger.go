@@ -99,7 +99,7 @@ func (l *loggerImpl) log(lvl Level, skipFrames int, format string, args ...inter
 		return
 	}
 
-	f := "%s  %s  %-30s  " + format + "\n"
+	f := "%s  %s  %-40s  " + format + "\n"
 	a := []interface{}{
 		time.Now().Format(timestampFormat),
 		l.levelStr[lvl],

@@ -4,22 +4,22 @@ import "strings"
 
 var (
 	defaultFormatStr = []string{
-		"",
-		"%v",
-		"%v %v",
-		"%v %v %v",
-		"%v %v %v %v",
-		"%v %v %v %v %v",
-		"%v %v %v %v %v %v",
-		"%v %v %v %v %v %v %v",
-		"%v %v %v %v %v %v %v %v",
-		"%v %v %v %v %v %v %v %v %v",
-		"%v %v %v %v %v %v %v %v %v %v",
-		"%v %v %v %v %v %v %v %v %v %v %v",
-		"%v %v %v %v %v %v %v %v %v %v %v %v",
-		"%v %v %v %v %v %v %v %v %v %v %v %v %v",
-		"%v %v %v %v %v %v %v %v %v %v %v %v %v %v",
-		"%v %v %v %v %v %v %v %v %v %v %v %v %v %v %v",
+		buildDefaultFormat(0),
+		buildDefaultFormat(1),
+		buildDefaultFormat(2),
+		buildDefaultFormat(3),
+		buildDefaultFormat(4),
+		buildDefaultFormat(5),
+		buildDefaultFormat(6),
+		buildDefaultFormat(7),
+		buildDefaultFormat(8),
+		buildDefaultFormat(9),
+		buildDefaultFormat(10),
+		buildDefaultFormat(11),
+		buildDefaultFormat(12),
+		buildDefaultFormat(13),
+		buildDefaultFormat(14),
+		buildDefaultFormat(15),
 	}
 )
 

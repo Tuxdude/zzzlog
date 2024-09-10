@@ -48,8 +48,9 @@ var (
 
 func defaultLoggingConfig() *configInternal {
 	c := &configInternal{
-		dest:     os.Stdout,
-		maxLevel: LvlInfo,
+		dest:           os.Stdout,
+		maxLevel:       LvlInfo,
+		skipCallerInfo: false,
 	}
 	if isTTY() {
 		c.levelColors = colorizedDefault

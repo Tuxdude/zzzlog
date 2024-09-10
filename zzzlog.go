@@ -34,6 +34,8 @@ type Config struct {
 	Dest io.Writer
 	// Level determines the maximum logging level.
 	MaxLevel Level
+	// SkipCallerInfo set to true skips logging the call site information.
+	SkipCallerInfo bool
 }
 
 // NewLogger instantiates a Logger.
@@ -41,6 +43,7 @@ func NewLogger(userConfig *Config) zzzlogi.Logger {
 	c := defaultLoggingConfig()
 	c.dest = userConfig.Dest
 	c.maxLevel = userConfig.MaxLevel
+	c.skipCallerInfo = userConfig.SkipCallerInfo
 	return newLoggerForConfig(c)
 }
 

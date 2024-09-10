@@ -31,6 +31,8 @@ type configInternal struct {
 	maxLevel Level
 	// levelColors contains the color configuration for each log level.
 	levelColors levelColorMap
+	// skipCallerInfo set to true skips logging the call site information.
+	skipCallerInfo bool
 }
 
 // newLoggerForConfig builds a logger based on the specified config.
@@ -99,11 +101,22 @@ func (l *loggerImpl) log(lvl Level, skipFrames int, format string, args ...inter
 		return
 	}
 
-	f := "%s  %s  %-40s  " + format + "\n"
-	a := []interface{}{
-		time.Now().Format(timestampFormat),
-		l.levelStr[lvl],
-		callerInfo(skipFrames + 1),
+	var f string
+	var a []interface{}
+
+	if l.config.skipCallerInfo {
+		f = "%s  %s  " + format + "\n"
+		a = []interface{}{
+			time.Now().Format(timestampFormat),
+			l.levelStr[lvl],
+		}
+	} else {
+		f = "%s  %s  %-40s  " + format + "\n"
+		a = []interface{}{
+			time.Now().Format(timestampFormat),
+			l.levelStr[lvl],
+			callerInfo(skipFrames + 1),
+		}
 	}
 	a = append(a, args...)
 	l.write(f, a...)

@@ -62,12 +62,20 @@ func (l *loggerImpl) Errorf(format string, args ...interface{}) {
 	l.log(LvlError, 1, format, args...)
 }
 
+func (l *loggerImpl) ErrorEmpty() {
+	l.logEmpty(LvlError)
+}
+
 func (l *loggerImpl) Warn(args ...interface{}) {
 	l.log(LvlWarn, 1, defaultFormat(len(args)), args...)
 }
 
 func (l *loggerImpl) Warnf(format string, args ...interface{}) {
 	l.log(LvlWarn, 1, format, args...)
+}
+
+func (l *loggerImpl) WarnEmpty() {
+	l.logEmpty(LvlWarn)
 }
 
 func (l *loggerImpl) Info(args ...interface{}) {
@@ -78,6 +86,10 @@ func (l *loggerImpl) Infof(format string, args ...interface{}) {
 	l.log(LvlInfo, 1, format, args...)
 }
 
+func (l *loggerImpl) InfoEmpty() {
+	l.logEmpty(LvlInfo)
+}
+
 func (l *loggerImpl) Debug(args ...interface{}) {
 	l.log(LvlDebug, 1, defaultFormat(len(args)), args...)
 }
@@ -86,12 +98,20 @@ func (l *loggerImpl) Debugf(format string, args ...interface{}) {
 	l.log(LvlDebug, 1, format, args...)
 }
 
+func (l *loggerImpl) DebugEmpty() {
+	l.logEmpty(LvlDebug)
+}
+
 func (l *loggerImpl) Trace(args ...interface{}) {
 	l.log(LvlTrace, 1, defaultFormat(len(args)), args...)
 }
 
 func (l *loggerImpl) Tracef(format string, args ...interface{}) {
 	l.log(LvlTrace, 1, format, args...)
+}
+
+func (l *loggerImpl) TraceEmpty() {
+	l.logEmpty(LvlTrace)
 }
 
 func (l *loggerImpl) log(lvl Level, skipFrames int, format string, args ...interface{}) {
@@ -118,6 +138,13 @@ func (l *loggerImpl) log(lvl Level, skipFrames int, format string, args ...inter
 	}
 	a = append(a, args...)
 	l.write(f, a...)
+}
+
+func (l *loggerImpl) logEmpty(lvl Level) {
+	if lvl > l.config.maxLevel {
+		return
+	}
+	l.write("\n")
 }
 
 func (l *loggerImpl) write(format string, args ...interface{}) {

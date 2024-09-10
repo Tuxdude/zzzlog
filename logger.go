@@ -9,10 +9,6 @@ import (
 	"github.com/tuxdude/zzzlogi"
 )
 
-const (
-	timestampFormat = "2006-01-02T15:04:05.000Z0700"
-)
-
 // loggerImpl is the implementation of the level logger based on
 // zzzlogi.Logger interface.
 type loggerImpl struct {
@@ -33,6 +29,8 @@ type configInternal struct {
 	levelColors levelColorMap
 	// skipCallerInfo set to true skips logging the call site information.
 	skipCallerInfo bool
+	// timestampLoggingFormat determines the format for logging the timestamps.
+	timestampLoggingFormat string
 }
 
 // newLoggerForConfig builds a logger based on the specified config.
@@ -107,13 +105,13 @@ func (l *loggerImpl) log(lvl Level, skipFrames int, format string, args ...inter
 	if l.config.skipCallerInfo {
 		f = "%s  %s  " + format + "\n"
 		a = []interface{}{
-			time.Now().Format(timestampFormat),
+			time.Now().Format(l.config.timestampLoggingFormat),
 			l.levelStr[lvl],
 		}
 	} else {
 		f = "%s  %s  %-40s  " + format + "\n"
 		a = []interface{}{
-			time.Now().Format(timestampFormat),
+			time.Now().Format(l.config.timestampLoggingFormat),
 			l.levelStr[lvl],
 			callerInfo(skipFrames + 1),
 		}

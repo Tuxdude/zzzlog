@@ -9,6 +9,10 @@ import (
 	"github.com/tuxdude/zzzlogi"
 )
 
+const (
+	defaultTimestampFormat = "2006-01-02T15:04:05.000Z0700"
+)
+
 // Logging levels used by the zzzlog logger.
 const (
 	// LvlFatal represents the Fatal log level.
@@ -36,6 +40,8 @@ type Config struct {
 	MaxLevel Level
 	// SkipCallerInfo set to true skips logging the call site information.
 	SkipCallerInfo bool
+	// TimestampLoggingFormat determines the format for logging the timestamps.
+	TimestampLoggingFormat string
 }
 
 // NewLogger instantiates a Logger.
@@ -44,6 +50,11 @@ func NewLogger(userConfig *Config) zzzlogi.Logger {
 	c.dest = userConfig.Dest
 	c.maxLevel = userConfig.MaxLevel
 	c.skipCallerInfo = userConfig.SkipCallerInfo
+	if userConfig.TimestampLoggingFormat != "" {
+		c.timestampLoggingFormat = userConfig.TimestampLoggingFormat
+	} else {
+		c.timestampLoggingFormat = defaultTimestampFormat
+	}
 	return newLoggerForConfig(c)
 }
 

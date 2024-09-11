@@ -114,6 +114,14 @@ func (l *loggerImpl) TraceEmpty() {
 	l.logEmpty(LvlTrace)
 }
 
+func (l *loggerImpl) Print(args ...interface{}) {
+	l.write(fmt.Sprintf("%s\n", defaultFormat(len(args))), args...)
+}
+
+func (l *loggerImpl) Printf(format string, args ...interface{}) {
+	l.write(fmt.Sprintf("%s\n", format), args...)
+}
+
 func (l *loggerImpl) log(lvl Level, skipFrames int, format string, args ...interface{}) {
 	if lvl > l.config.maxLevel {
 		return

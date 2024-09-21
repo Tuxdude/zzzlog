@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/tuxdude/zzzlogi"
@@ -27,6 +28,10 @@ type configInternal struct {
 	maxLevel Level
 	// levelColors contains the color configuration for each log level.
 	levelColors levelColorMap
+	// skipTimestamp set to true skips logging the timestamp in the logs.
+	skipTimestamp bool
+	// skipLogLevel seto true skips logging the log level in the logs.
+	skipLogLevel bool
 	// skipCallerInfo set to true skips logging the call site information.
 	skipCallerInfo bool
 	// timestampLoggingFormat determines the format for logging the timestamps.
@@ -127,25 +132,25 @@ func (l *loggerImpl) log(lvl Level, skipFrames int, format string, args ...inter
 		return
 	}
 
-	var f string
+	var f strings.Builder
 	var a []interface{}
 
-	if l.config.skipCallerInfo {
-		f = "%s  %s  " + format + "\n"
-		a = []interface{}{
-			time.Now().Format(l.config.timestampLoggingFormat),
-			l.levelStr[lvl],
-		}
-	} else {
-		f = "%s  %s  %-40s  " + format + "\n"
-		a = []interface{}{
-			time.Now().Format(l.config.timestampLoggingFormat),
-			l.levelStr[lvl],
-			callerInfo(skipFrames + 1),
-		}
+	if !l.config.skipTimestamp {
+		f.WriteString("%s  ")
+		a = append(a, time.Now().Format(l.config.timestampLoggingFormat))
 	}
+	if !l.config.skipLogLevel {
+		f.WriteString("%s  ")
+		a = append(a, l.levelStr[lvl])
+	}
+	if !l.config.skipCallerInfo {
+		f.WriteString("%-40s  ")
+		a = append(a, callerInfo(skipFrames+1))
+	}
+	f.WriteString(format)
+	f.WriteString("\n")
 	a = append(a, args...)
-	l.write(f, a...)
+	l.write(f.String(), a...)
 }
 
 func (l *loggerImpl) logEmpty(lvl Level) {

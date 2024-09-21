@@ -38,6 +38,10 @@ type Config struct {
 	Dest io.Writer
 	// Level determines the maximum logging level.
 	MaxLevel Level
+	// SkipTimestamp set to true skips logging the timestamp in the logs.
+	SkipTimestamp bool
+	// SkipLogLevel seto to true skips logging the log level in the logs.
+	SkipLogLevel bool
 	// SkipCallerInfo set to true skips logging the call site information.
 	SkipCallerInfo bool
 	// TimestampLoggingFormat determines the format for logging the timestamps.
@@ -49,6 +53,8 @@ func NewLogger(userConfig *Config) zzzlogi.Logger {
 	c := defaultLoggingConfig()
 	c.dest = userConfig.Dest
 	c.maxLevel = userConfig.MaxLevel
+	c.skipTimestamp = userConfig.SkipTimestamp
+	c.skipLogLevel = userConfig.SkipLogLevel
 	c.skipCallerInfo = userConfig.SkipCallerInfo
 	if userConfig.TimestampLoggingFormat != "" {
 		c.timestampLoggingFormat = userConfig.TimestampLoggingFormat
@@ -64,5 +70,15 @@ func NewConsoleLoggerConfig() *Config {
 	return &Config{
 		Dest:     os.Stdout,
 		MaxLevel: LvlInfo,
+	}
+}
+
+func NewVanillaLoggerConfig() *Config {
+	return &Config{
+		Dest:           os.Stdout,
+		MaxLevel:       LvlInfo,
+		SkipTimestamp:  true,
+		SkipLogLevel:   true,
+		SkipCallerInfo: true,
 	}
 }

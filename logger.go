@@ -34,6 +34,10 @@ type configInternal struct {
 	skipLogLevel bool
 	// skipCallerInfo set to true skips logging the call site information.
 	skipCallerInfo bool
+	// panicInFatal set to true causes the log message to be emitted
+	// through panic() after logging, instead of the default behavior of
+	// exiting with a status code 1 when using Fatal or FatalF logging methods.
+	panicInFatal bool
 	// timestampLoggingFormat determines the format for logging the timestamps.
 	timestampLoggingFormat string
 }
@@ -50,13 +54,23 @@ func newLoggerForConfig(config *configInternal) zzzlogi.Logger {
 func (l *loggerImpl) Fatal(args ...interface{}) {
 	l.log(LvlFatal, 1, defaultFormat(len(args)), args...)
 	l.write("\n%s\n", stackTraces())
-	os.Exit(1)
+
+	if l.config.panicInFatal {
+		panic(fmt.Sprintf(defaultFormat(len(args)), args...))
+	} else {
+		os.Exit(1)
+	}
 }
 
 func (l *loggerImpl) Fatalf(format string, args ...interface{}) {
 	l.log(LvlFatal, 1, format, args...)
 	l.write("\n%s\n", stackTraces())
-	os.Exit(1)
+
+	if l.config.panicInFatal {
+		panic(fmt.Sprintf(format, args...))
+	} else {
+		os.Exit(1)
+	}
 }
 
 func (l *loggerImpl) Error(args ...interface{}) {

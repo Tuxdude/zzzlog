@@ -44,6 +44,10 @@ type Config struct {
 	SkipLogLevel bool
 	// SkipCallerInfo set to true skips logging the call site information.
 	SkipCallerInfo bool
+	// PanicInFatal set to true causes the log message to be emitted
+	// through panic() after logging, instead of the default behavior of
+	// exiting with a status code 1 when using Fatal or FatalF logging methods.
+	PanicInFatal bool
 	// TimestampLoggingFormat determines the format for logging the timestamps.
 	TimestampLoggingFormat string
 }
@@ -56,6 +60,7 @@ func NewLogger(userConfig *Config) zzzlogi.Logger {
 	c.skipTimestamp = userConfig.SkipTimestamp
 	c.skipLogLevel = userConfig.SkipLogLevel
 	c.skipCallerInfo = userConfig.SkipCallerInfo
+	c.panicInFatal = userConfig.PanicInFatal
 	if userConfig.TimestampLoggingFormat != "" {
 		c.timestampLoggingFormat = userConfig.TimestampLoggingFormat
 	} else {

@@ -17,4 +17,12 @@ var (
 		LvlDebug: "DEBUG",
 		LvlTrace: "TRACE",
 	}
+	stringerLevelname = map[Level]string{
+		LvlFatal: "Fatal",
+		LvlError: "Error",
+		LvlWarn:  "Warn",
+		LvlInfo:  "Info",
+		LvlDebug: "Debug",
+		LvlTrace: "Trace",
+	}
 )

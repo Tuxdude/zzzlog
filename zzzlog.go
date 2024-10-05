@@ -32,6 +32,10 @@ const (
 // Level represents the logging level used by the zzzlog logger.
 type Level uint8
 
+func (l Level) String() string {
+	return stringerLevelname[l]
+}
+
 // Config contains the configuration for the logger.
 type Config struct {
 	// Dest is the logging destination for the logs.
